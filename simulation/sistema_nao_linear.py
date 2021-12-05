@@ -14,7 +14,7 @@ l2 = 0.3
 w1 = 0.6
 g = 9.8
 a,b,g,d,e,z,n,th = [m1*l1**2+m2*w1**2,w1*l2,w1*l2,m1*l1*g+m2*w1*g,m2*l2**2,w1*l2,w1*l2,m2*l2*g]
-y0 = [0, 0, 0, 0]
+y0 = [0.01, 0, 0, 0]
 t = np.linspace(0, 20, 1001)
 sol = odeint(pend, y0, t, args=(a,b,g,d,e,z,n,th))
 

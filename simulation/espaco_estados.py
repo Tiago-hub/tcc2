@@ -2,12 +2,29 @@ import numpy as np
 import matplotlib.pyplot as plt
 import control
 from scipy import signal
+import matplotlib.pyplot as plt 
+from matplotlib import animation 
+from mpl_toolkits.mplot3d import Axes3D 
+from matplotlib.animation import PillowWriter
+#-------------------------------Functions------------------------------------------------#
 
+def Gen2Cart(theta1,theta2,w1,w2):
+    x1 = w1 * np.sin(theta1)
+    y1 = -w1 * np.cos(theta1)
+    x2 = x1 + w2 * np.sin(theta2)
+    y2 = y1 + -1*w2*np.cos(theta2)
+    return (x1,y1,x2,y2)
+
+def animate(i):
+    ln1.set_data([0, x1[i], x2[i]], [0,y1[i], y2[i]])
+
+#------------------------------main code---------------------------------------------------#
 m1 = 1
 m2 = 0.1
-l1 = 0.4
-l2 = 0.3
-w1 = 0.6
+l1 = 1.1
+l2 = 1
+w1 = 1.3
+w2 = 1.2
 g = 9.8
 a,b,ga,d,e,z = [m1*l1**2+m2*w1**2,m2*w1*l2,m1*g*l1+m2*g*w1,m2*w1*l2,m2*l2**2,m2*g*l2]
 a21 = -1*ga*(1/(a-((b*d)/e)))
@@ -20,15 +37,26 @@ a31,a32,a33,a34=[0,0,0,1]
 a42,a44=[0,0]
 
 A = np.array([[a11,a12,a13,a14],[a21,a22,a23,a24],[a31,a32,a33,a34],[a41,a42,a43,a44]])
-B = np.array([[0.1,],[0,],[0,],[0,]])
+B = np.array([[0,],[0,],[0.2,],[0,]])
 C = np.array([[1,0,0,0],[0,0,1,0]])
 D = np.array([[0],[0]])
 
 sys = control.ss(A,B,C,D)
-T, yout1 = control.step_response(sys,T=None,X0=0,input=0,output=0)
-T, yout2 = control.step_response(sys,T=None,X0=0,input=0,output=1)
+T, q1 = control.step_response(sys,T=None,X0=0,input=0,output=0)
+T, q2 = control.step_response(sys,T=None,X0=0,input=0,output=1)
 
-plt.plot(T, yout1, 'g', label='x1(t)')
-plt.plot(T, yout2, 'b', label='x3(t)')
+#plt.plot(T, q1, 'g', label='x1(t)')
+#plt.plot(T, q2, 'b', label='x3(t)')
 
-plt.show()
+#plt.show()
+x1,y1,x2,y2 = Gen2Cart(q1,q2,w1,w2)
+
+fig, ax = plt.subplots(1,1, figsize=(8,8))
+ax.set_facecolor('k')
+ax.get_xaxis().set_ticks([])
+ax.get_yaxis().set_ticks([])
+ln1, = plt.plot([], [], 'ro--', lw=3, markersize=8)
+ax.set_ylim(-4,4)
+ax.set_xlim(-4,4)
+ani = animation.FuncAnimation(fig,animate,frames=len(x1),interval=0.1)
+ani.save('pen.gif',writer='pillow',fps=120)
