@@ -6,6 +6,7 @@ import matplotlib.pyplot as plt
 from matplotlib import animation 
 from mpl_toolkits.mplot3d import Axes3D 
 from matplotlib.animation import PillowWriter
+from anime import Anime
 #-------------------------------Functions------------------------------------------------#
 
 def Gen2Cart(theta1,theta2,w1,w2):
@@ -14,9 +15,6 @@ def Gen2Cart(theta1,theta2,w1,w2):
     x2 = x1 + w2 * np.sin(theta2)
     y2 = y1 + -1*w2*np.cos(theta2)
     return (x1,y1,x2,y2)
-
-def animate(i):
-    ln1.set_data([0, x1[i], x2[i]], [0,y1[i], y2[i]])
 
 #------------------------------main code---------------------------------------------------#
 m1 = 1
@@ -47,16 +45,8 @@ T, q2 = control.step_response(sys,T=None,X0=0,input=0,output=1)
 
 #plt.plot(T, q1, 'g', label='x1(t)')
 #plt.plot(T, q2, 'b', label='x3(t)')
-
 #plt.show()
 x1,y1,x2,y2 = Gen2Cart(q1,q2,w1,w2)
 
-fig, ax = plt.subplots(1,1, figsize=(8,8))
-ax.set_facecolor('k')
-ax.get_xaxis().set_ticks([])
-ax.get_yaxis().set_ticks([])
-ln1, = plt.plot([], [], 'ro--', lw=3, markersize=8)
-ax.set_ylim(-4,4)
-ax.set_xlim(-4,4)
-ani = animation.FuncAnimation(fig,animate,frames=len(x1),interval=0.1)
-ani.save('pen.gif',writer='pillow',fps=120)
+anime_handler = Anime(x1=x1,x2=x2,y1=y1,y2=y2)
+anime_handler.generateAnimation()
