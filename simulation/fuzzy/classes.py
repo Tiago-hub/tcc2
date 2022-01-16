@@ -35,7 +35,6 @@ class triangular:
         #    y = 0
         return y
 
-
 class membership:
     """"Membership class is a class that handles the creation and calculation of multiple 
         triangular functions between a range of values on x axis
@@ -94,43 +93,56 @@ class membership:
         r = sum(self.calc_memberships(x))
         return r
 
-
 class neuron:
     def __init__(self, mbs_number=3, mbs_limits=[-10, 10],q=None):
         try:
-            if len(q)!=mbs_number and q!=None:
-                raise TypeError
-        except TypeError:
+            if q is not None:
+                if len(q)!=mbs_number:
+                    raise TypeError
+        except TypeError as e:
+            print(e)
             print("Membership number must be equal to q list length. Each membership has it own costant to multiply")
             exit(1)
         self.membership_number = mbs_number
         if q is None:
-            self.q = [1]*mbs_number
+            self.q = [0]*mbs_number
         elif q:
             self.q = q
         self.memberships = membership(
             xmin=mbs_limits[0], xmax=mbs_limits[1], m=mbs_number, q=q)
 
-    def calc(self,x):
+    def calc(self,x,returnSum=True):
         mbsh_results = self.memberships.get_active_membership(x)
-        r = 0
-        for mbsh in mbsh_results:
-            r   += mbsh_results[mbsh] * self.q[mbsh]
-        return r
+        if returnSum:
+            r = 0
+            for mbsh in mbsh_results:
+                r   += mbsh_results[mbsh] * self.q[mbsh]
+            return r
+        else:
+            return mbsh_results
 
     def update_q(self,indexes,values):
         for i,index in enumerate(indexes):
             self.q[index] = values[i]
 
+    def get_q(self,index):
+        return self.q[index]
 class NFN:
     """"receives a list of neurons"""
     def __init__(self, neurons):
         self.neurons = neurons
-    def calc(self):
+    def calc(self,x):
         r = 0
-        for neuron in self.neurons:
-            r += neuron.calc()
+        try:
+            if len(x) != len(self.neurons):
+                    raise TypeError
+        except TypeError as e:
+            print(e)
+            print(f"Input matrix must have the same length of neurons. Current neurons is {len(self.neurons)}")
+            exit(1)
+        for index, neuron in enumerate(self.neurons):
+            r += neuron.calc(x[index])
         return r
-
-neuron = neuron(q=[1,1,1])
-print(neuron.calc(5))
+    def update_neuron_q(self,neuron_index,indexes,values):
+        neuron = self.neuron[neuron_index]
+        neuron.update_q(indexes,values)
