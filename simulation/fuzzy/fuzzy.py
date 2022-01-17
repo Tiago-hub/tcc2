@@ -71,33 +71,34 @@ def fuzzy(x,y,epocas=1,max_membership=25):
         x_input = []
         for i in range(len(x)):
             x_input += [x[i][t]]
-        output[0][t]=(neural_ntw.calc(x_input))/4
+        output[0][t]=(neural_ntw.calc(x_input))/inputs
 
     return output[0]
 
 
-x = [[0]*(1000) for i in range(4)]
-y = [[]] * 4
-x[0]=(np.linspace(0, 2*np.pi, 1000))
+if __name__ == "__main__":
+    x = [[0]*(1000) for i in range(4)]
+    y = [[]] * 4
+    x[0]=(np.linspace(0, 2*np.pi, 1000))
 
-for i in range(len(x[0])):
-    if i>5:
-        x[1][i] = x[0][i-1]
-        x[2][i] = x[0][i-2]
-        x[3][i] = x[0][i-3]
-    else:
-        x[1][i] = 0
-        x[2][i] = 0
-        x[3][i] = 0
+    for i in range(len(x[0])):
+        if i>5:
+            x[1][i] = x[0][i-1]
+            x[2][i] = x[0][i-2]
+            x[3][i] = x[0][i-3]
+        else:
+            x[1][i] = 0
+            x[2][i] = 0
+            x[3][i] = 0
 
-for i in range(len(x)):
-    y[i]=np.sin(x[i])
+    for i in range(len(x)):
+        y[i]=np.sin(x[i])
 
 
-output = fuzzy(x,y,max_membership=30)
-fig = plt.figure()
-ax = fig.add_subplot(1, 1, 1)
-ax.plot(x[0],y[0])
-ax.plot(x[0],output)
-ax.grid()
-plt.show()
+    output = fuzzy(x,y,max_membership=30)
+    fig = plt.figure()
+    ax = fig.add_subplot(1, 1, 1)
+    ax.plot(x[0],y[0])
+    ax.plot(x[0],output)
+    ax.grid()
+    plt.show()
