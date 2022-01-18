@@ -5,7 +5,7 @@ output: the most parecido com y possible
 import numpy as np
 import matplotlib.pyplot as plt
 
-def fuzzy(x,y,epocas=1,max_membership=25):
+def fuzzy(x,y,epocas=1,max_membership=25,return_network=False):
     from classes import NFN, membership,neuron
     max_neurons = len(x)
     inputs = len(x)
@@ -68,7 +68,8 @@ def fuzzy(x,y,epocas=1,max_membership=25):
                     new_membership = old_membership - alpha*diff*memberhip_value
                     neural_ntw.neurons[i].update_q([membership_index],[new_membership])
 
-
+    if return_network:
+        return neural_ntw
     output = [[0]*len(x[0]) for i in range(1)]
 
     for t in range(len(x[0])):
