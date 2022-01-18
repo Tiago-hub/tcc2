@@ -35,23 +35,23 @@ def fuzzy(x,y,epocas=1,max_membership=25):
     #shuffle train_inputs and outputs
     shuffle_list = np.random.permutation(len(x[0]))
     train_input = [[0]*len(x[0]) for i in range(inputs)]
-    train_output= [[0]*len(x[0]) for i in range(inputs)]
+    train_output= [0]*len(y)
     for i, _ in enumerate(x):
         j = 0
         for index in shuffle_list:
             train_input[i][j] = x[i][index]
-            train_output[i][j] = y[i][index]
+            train_output[j] = y[index]
             j+=1
-    yt = [[0]*len(train_input[0]) for i in range(inputs)]
+    yt = [0]*len(y)
     active_memberships = [[0]*len(train_input[0]) for i in range(inputs)]
 
     for n in range(epocas):
         #calc alpha and new weights
         for t in range(len(train_input[0])):
+            y_sum = 0
             for i in range(len(train_input)):
                 neuron = neural_ntw.neurons[i]
-                yt[i][t] = neuron.calc(train_input[i][t])
-                diff = yt[i][t] - train_output[i][t]
+                y_sum += neuron.calc(train_input[i][t])
                 active_memberships[i][t] = neuron.calc(train_input[i][t],returnSum=False)
                 #calc alpha
                 den = 0
@@ -59,11 +59,15 @@ def fuzzy(x,y,epocas=1,max_membership=25):
                     mbsh_active = (neural_ntw.neurons[j].calc(train_input[j][t],returnSum=False))
                     den += sum(list(map(lambda a:a**2, mbsh_active.values())))
                 alpha = 1/den
+            yt[t] = y_sum
+            for i in range(len(train_input)):
+                diff = yt[t] - train_output[t]
                 for membership_index in active_memberships[i][t].keys():
                     memberhip_value = active_memberships[i][t].get(membership_index)
                     old_membership = neural_ntw.neurons[i].get_q(membership_index)
                     new_membership = old_membership - alpha*diff*memberhip_value
                     neural_ntw.neurons[i].update_q([membership_index],[new_membership])
+
 
     output = [[0]*len(x[0]) for i in range(1)]
 
@@ -71,14 +75,14 @@ def fuzzy(x,y,epocas=1,max_membership=25):
         x_input = []
         for i in range(len(x)):
             x_input += [x[i][t]]
-        output[0][t]=(neural_ntw.calc(x_input))/inputs
+        output[0][t]=(neural_ntw.calc(x_input))
 
     return output[0]
 
 
 if __name__ == "__main__":
     x = [[0]*(1000) for i in range(4)]
-    y = [[]] * 4
+    y = [] * 1000
     x[0]=(np.linspace(0, 2*np.pi, 1000))
 
     for i in range(len(x[0])):
@@ -91,14 +95,14 @@ if __name__ == "__main__":
             x[2][i] = 0
             x[3][i] = 0
 
-    for i in range(len(x)):
-        y[i]=np.sin(x[i])
+    # for i in range(len(x)):
+    #     y[i]=np.sin(x[i])
+    y=np.sin(x[0])
 
-
-    output = fuzzy(x,y,max_membership=30)
+    output = fuzzy(x,y,max_membership=30,epocas=5)
     fig = plt.figure()
     ax = fig.add_subplot(1, 1, 1)
-    ax.plot(x[0],y[0])
+    ax.plot(x[0],y)
     ax.plot(x[0],output)
     ax.grid()
     plt.show()
