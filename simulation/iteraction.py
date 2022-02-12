@@ -3,20 +3,9 @@ from scipy.integrate import odeint, solve_ivp
 import matplotlib.pyplot as plt
 from anime import Anime
 from pid_class import PID
-import sys, os
-import csv
-sys.path.append(os.path.join(os.path.dirname(__file__), "physical"))
-sys.path.append(os.path.join(os.path.dirname(__file__), "fuzzy"))
-import model
-from classes import NFN, neuron
 
-m1 = 5
-m2 = 5
-l1 = 1
-l2 = 1
-w1 = 1.5
-w2 = 1.5
-pendulum_model = model.double_pendulum(m1, m2, l1, l2, w1, w2,)
+#-------------------------------Functions------------------------------------------------#
+
 
 def Gen2Cart(theta1, theta2, w1, w2):
     x1 = w1 * np.sin(theta1)
@@ -25,15 +14,29 @@ def Gen2Cart(theta1, theta2, w1, w2):
     y2 = y1 + -1*w2*np.cos(theta2)
     return (x1, y1, x2, y2)
 
-# neuron1 = neuron()
-# neuron2 = neuron()
-# neuron3 = neuron()
 
-# network = NFN([neuron1,neuron2,neuron3])
-# print(neuron1.calc(2))
-# exit()
+def pend(t, x, a, b, g, d, e, z, n, th):
+    x1, x2, x3, x4, tal1, tal2 = x
+    dxdt = np.array([   x2,
+                        (-1/(a-((b*z)/e)*np.cos(x1-x3)**2))*((b/e)*x2**2*np.sin(x1-x3)*np.cos(x1-x3)-((b*th)/e)*np.cos(x1-x3)*np.sin(x3)+g*x4**2*np.sin(x1-x3)+d*np.sin(x1)) + tal1 - 0.15*0.5*x2*x2,
+                        x4,
+                        (1/(e-((b*z/a)*np.cos(x1-x3)**2)))*(((g*z)/a)*x4**2*np.cos(x1-x3)*np.sin(x1-x3)+(((d*z)/a)*np.sin(x1)*np.cos(x1-x3)+n*x2**2*np.sin(x1-x3)-th*np.sin(x3))) + tal2 - 0.15*0.5*x4*x4,
+                        tal1,
+                        tal2])
+    return dxdt
 
-#-------------------------------Functions------------------------------------------------#
+
+m1 = 5
+m2 = 5
+l1 = 1
+l2 = 1
+w1 = 1.5
+w2 = 1.5
+g = 9.8
+a, b, g, d, e, z, n, th = [m1*l1**2+m2*w1**2, w1*l2,
+                           w1*l2, m1*l1*g+m2*w1*g, m2*l2**2, w1*l2, w1*l2, m2*l2*g]
+
+p = (a, b, g, d, e, z, n, th)  # Parameters of the system
 
 y0 = [0, 0, 0, 0, 0, 0]  # Initial state of the system
 dt = 0.1
@@ -61,7 +64,7 @@ for i in range(len(t)):
     #print(i)
     if i != 0:
         t_span = (t[i-1], t[i])
-        result_solve_ivp = solve_ivp(pendulum_model.dpend_dt, t_span, y0)
+        result_solve_ivp = solve_ivp(pend, t_span, y0, args=p)
         last_column = result_solve_ivp.y.shape[1] - 1
         if counter>1:
             counter = 0
@@ -78,28 +81,11 @@ for i in range(len(t)):
             result[j].append(y0[j])
         counter += 1
 
-# with open(f'./data.csv','w',newline='') as file:
-#     writer = csv.writer(file)
-#     #writer.writerow([f'kp = {kp}',f'ki = {ki}',f'kd = {kd}'])
-#     writer.writerow(['time','angle 1','velocity 1','angle 2','velocity 2','torque 1','torque 2'])
-#     for i in range(len(result[0])):
-#         writer.writerow([t[i],result[0][i],result[1][i],result[2][i],result[3][i],result[4][i],result[5][i]])
-
-    
 fig = plt.figure()
-ax = fig.add_subplot(2, 1, 1)
+ax = fig.add_subplot(1, 1, 1)
 ax.plot(t, result[0], 'b', label='x1(t)')
 #ax.plot(t, result[1], 'g', label='x2(t)')
 ax.plot(t, result[2], 'r', label='x3(t)')
-#ax.plot(t, result[3], 'y', label='x4(t)')
-ax.legend(loc='best')
-#plt.xlim([0, 5])
-#plt.ylim([-20, 20])
-ax.grid()
-ax = fig.add_subplot(2, 1, 2)
-ax.plot(t, result[4], 'b', label='T1(t)')
-#ax.plot(t, result[1], 'g', label='x2(t)')
-ax.plot(t, result[5], 'r', label='T2(t)')
 #ax.plot(t, result[3], 'y', label='x4(t)')
 ax.legend(loc='best')
 #plt.xlim([0, 5])

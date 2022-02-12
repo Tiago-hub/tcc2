@@ -7,7 +7,7 @@ import sys, os
 import csv
 sys.path.append(os.path.join(os.path.dirname(__file__), "physical"))
 sys.path.append(os.path.join(os.path.dirname(__file__), "fuzzy"))
-import model
+import model2 as model
 from classes import NFN, neuron
 
 m1 = 5
@@ -16,7 +16,7 @@ l1 = 1
 l2 = 1
 w1 = 1.5
 w2 = 1.5
-pendulum_model = model.double_pendulum(m1, m2, l1, l2, w1, w2,)
+pendulum_model = model.double_pendulum(m1, m2, l1, l2, w1, w2,b1=0.1,b2=0.1)
 
 def Gen2Cart(theta1, theta2, w1, w2):
     x1 = w1 * np.sin(theta1)
@@ -37,19 +37,19 @@ def Gen2Cart(theta1, theta2, w1, w2):
 
 y0 = [0, 0, 0, 0, 0, 0]  # Initial state of the system
 dt = 0.1
-t = np.arange(0.0, 100, dt)
+t = np.arange(0.0, 200, dt)
 
-ku = 1
-tu = 2.89-0.56
+ku = 5
+tu = 55.916-54.039
 kp = 0.6*ku
 ki = 1.2 * ku/tu
 kd = 0.075*ku*tu
 
-#kp, ki, kd = 1,0,0
+# kp, ki, kd = 5,0,0
 print(kp,ki,kd)
-controller_angle_1_1 = PID(Kp=kp, Ki=ki, Kd=kd, setpoint=1, sample_time=None, output_limits=(-10,10))
+controller_angle_1_1 = PID(Kp=kp, Ki=ki, Kd=kd, setpoint=1, sample_time=None)
 #controller_angle_1_2 = PID(Kp=1, Ki=0.0, Kd=0.0, setpoint=1, sample_time=None, output_limits=(-10,10))
-controller_angle_2_1 = PID(Kp=kp, Ki=ki, Kd=kd, setpoint=0, sample_time=None, output_limits=(-10,10))
+controller_angle_2_1 = PID(Kp=kp, Ki=ki, Kd=kd, setpoint=-1, sample_time=None)
 #controller_angle_2_2 = PID(Kp=1, Ki=0.0, Kd=0.0, setpoint=0, sample_time=None, output_limits=(-10,10))
 result = [[], [], [], [], [], []]
 for j in range(len(result)):
