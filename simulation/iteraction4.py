@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 import numpy as np
 from scipy.integrate import odeint, solve_ivp
 import matplotlib.pyplot as plt
@@ -88,13 +89,13 @@ for i in range(len(t)):
             result[j].append(y0[j])
         counter += 1
 
-with open(f'./data2.csv','w',newline='') as file:
-    writer = csv.writer(file)
-    #writer.writerow([f'kp = {kp}',f'ki = {ki}',f'kd = {kd}'])
-    writer.writerow(['time','angle 1','velocity 1','angle 2','velocity 2','torque 1','torque 2'])
-    for i in range(len(result[0])):
-        writer.writerow([t[i],result[0][i],result[1][i],result[2][i],result[3][i],result[4][i],result[5][i]])
-
+#with open(f'./data2.csv','w',newline='') as file:
+#    writer = csv.writer(file)
+#    #writer.writerow([f'kp = {kp}',f'ki = {ki}',f'kd = {kd}'])
+#    writer.writerow(['time','angle 1','velocity 1','angle 2','velocity 2','torque 1','torque 2'])
+#    for i in range(len(result[0])):
+#        writer.writerow([t[i],result[0][i],result[1][i],result[2][i],result[3][i],result[4][i],result[5][i]])
+#
     
 fig = plt.figure()
 ax = fig.add_subplot(2, 1, 1)
