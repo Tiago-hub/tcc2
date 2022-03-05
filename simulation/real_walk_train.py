@@ -84,11 +84,14 @@ def plot_graphs():
     #generate "time" array
 
     t = list(range(101))
-    fig = plt.figure()
-    ax = fig.add_subplot(1, 1, 1)
-    ax.plot(t,angles["Ankle"])
-    ax.plot(t,fuzzy_answer["Ankle"])
-    ax.grid()
+    for body_part in fuzzy_answer.keys():
+        fig = plt.figure()
+        ax = fig.add_subplot(1, 1, 1)
+        ax.plot(t,angles[body_part], "b", label=f"{body_part} angle")
+        ax.plot(t,fuzzy_answer[body_part], "r", label=f"{body_part} fuzzy")
+        ax.legend(loc="best")
+        ax.grid()
+        plt.title(f"{body_part} results")
     plt.show()
 
 def main():
