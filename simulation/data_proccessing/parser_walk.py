@@ -4,7 +4,7 @@ import csv
 import optparse
 
 usage = """Script to convert csv file with walking data to list.
-Place the csv file at data folder, use header to inform the column name"""""
+Place the csv file at data folder"""""
 
 p = optparse.OptionParser(usage=usage)
 p.add_option("-f", "--file", dest="filename",
@@ -18,8 +18,8 @@ root = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
 data_folder = os.path.join(root,"data")
 walk_file = os.path.join(data_folder,opts.filename)
 
-def walk_parser():
-    with open(walk_file) as file:
+def walk_parser(path_to_walk_file):
+    with open(path_to_walk_file) as file:
         walk_data_temp = csv.DictReader(file)
         walk_keys = walk_data_temp.fieldnames
         walk_data = {'Ankle Angle': [], 'Hip Angle': [], 'Knee Angle': [], 'Ankle Momentum': [], 'Hip Momentum': [], 'Knee Momentum': [], 'Ankle Power': [], 'Hip Power': [], 'Knee Power': []}
@@ -30,6 +30,6 @@ def walk_parser():
     return walk_data
 
 if __name__ == "__main__":
-    walk_data = walk_parser()
+    walk_data = walk_parser(walk_file)
     print(walk_data.keys()) 
     print(walk_data)
