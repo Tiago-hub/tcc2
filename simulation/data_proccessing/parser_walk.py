@@ -2,6 +2,9 @@
 import sys, os
 import csv
 import optparse
+from scipy.interpolate import interp1d
+import matplotlib.pyplot as plt
+import numpy as np
 
 usage = """Script to convert csv file with walking data to list.
 Place the csv file at data folder"""""
@@ -29,7 +32,19 @@ def walk_parser(path_to_walk_file):
 
     return walk_data
 
+def walk_interpolation(walk_data, dt=0.1):
+    t2 = np.arange(0.0, 100, dt)
+    walk_data_interpolation = {'Ankle Angle': [], 'Hip Angle': [], 'Knee Angle': [], 'Ankle Momentum': [], 'Hip Momentum': [], 'Knee Momentum': [], 'Ankle Power': [], 'Hip Power': [], 'Knee Power': []}
+    for key in walk_data.keys():
+        t = range(len(walk_data[key]))
+        fun = interp1d(t, walk_data[key], kind='cubic')
+        walk_data_interpolation[key] = fun(t2)
+    return walk_data_interpolation
+
+        
+
 if __name__ == "__main__":
     walk_data = walk_parser(walk_file)
+    walk_interpolation(walk_data)
     print(walk_data.keys()) 
     print(walk_data)

@@ -21,7 +21,7 @@ p.set_defaults(filename="walk1.csv")
 (opts, args) = p.parse_args()
 
 def setup():
-    global model, fuzzy, walk_file, walk_parser
+    global model, fuzzy, walk_file, walk_parser, walk_interpolation
     this_file_loc = os.path.abspath(__file__)
     this_file_path = Path(this_file_loc)
     simulation_folder = this_file_path.parents[0]
@@ -32,25 +32,27 @@ def setup():
     import model2 as model
     from fuzzy import fuzzy 
     from parser_walk import walk_parser
-    walk_data = walk_parser
+    from parser_walk import walk_interpolation
 
 def trainning():
     global fuzzy_answer, angles, momentums
     fuzzy_answer = {}
     angles = {}
     momentums = {}
-    walk_data = walk_parser(walk_file)
-    print(walk_data.keys())
-    epocas = 1
+    walk_data = walk_interpolation(walk_parser(walk_file),0.1)
+    epocas = 3
     max_membership = 25
 
     input_dict = {}
     output_dict = {}
     for data_name, data_list in walk_data.items():
+        #the range of input list is the number of delays,
+        #e.g range(4) -> input list will be a list with:
+        #[data(t), data(t-1), data(t-2), data(t-3)]
         input_list = [[] for i in range(10)]
         output_list = []
 
-        if "momentum" in data_name.lower():
+        if "angle" in data_name.lower():
             #shift in time
             for i in range(len(input_list)):
                 if i == 0:
@@ -64,13 +66,13 @@ def trainning():
 
             body_part = data_name.split(" ")[0]
             input_dict[body_part] = input_list
-            momentums[body_part] = data_list
+            angles[body_part] = data_list
 
-        elif "angle" in data_name.lower():
+        elif "momentum" in data_name.lower():
             output_list = data_list
             body_part = data_name.split(" ")[0]
             output_dict[body_part] = output_list
-            angles[body_part] = data_list
+            momentums[body_part] = data_list
 
     total_inputs = []
     for body_part, inputs in input_dict.items():
@@ -78,16 +80,18 @@ def trainning():
             total_inputs.append(data)
     for body_part, inputs in input_dict.items():
         output = output_dict[body_part]
-        fuzzy_answer[body_part] = fuzzy(total_inputs,output,epocas=3,max_membership=50)
+        fuzzy_answer[body_part] = fuzzy(total_inputs,output,epocas=epocas,max_membership=max_membership)
 
 def plot_graphs():
     #generate "time" array
 
     t = list(range(101))
+    dt = 0.1
+    t = np.arange(0.0, 100, dt)
     for body_part in fuzzy_answer.keys():
         fig = plt.figure()
         ax = fig.add_subplot(1, 1, 1)
-        ax.plot(t,angles[body_part], "b", label=f"{body_part} angle")
+        ax.plot(t,momentums[body_part], "b", label=f"{body_part} angle")
         ax.plot(t,fuzzy_answer[body_part], "r", label=f"{body_part} fuzzy")
         ax.legend(loc="best")
         ax.grid()
@@ -98,6 +102,11 @@ def main():
     setup()
     trainning()
     plot_graphs()
+
+def get_angles_trainned():
+    setup()
+    trainning()
+    return fuzzy_answer
     
 if __name__ == "__main__":
     main()
