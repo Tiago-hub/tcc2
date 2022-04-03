@@ -10,6 +10,7 @@ import matplotlib.pyplot as plt
 import csv
 import optparse
 import collections
+import pickle
 
 usage = """Script to convert csv file with walking data to list.
 Place the csv file at data folder"""""
@@ -31,18 +32,18 @@ def setup():
     walk_file = f"{simulation_folder}/data/{opts.filename}"
     import model2 as model
     from fuzzy import fuzzy 
-    from parser_walk import walk_parser
-    from parser_walk import walk_interpolation
+    from parser_walk_jp import walk_parser
+    from parser_walk_jp import walk_interpolation
 
 def trainning():
-    global fuzzy_answer, angles, momentums
+    global fuzzy_answer, angles, momentums, walk_data
     fuzzy_answer = {}
     angles = {}
     momentums = {}
     #walk_data = walk_interpolation(walk_parser(walk_file),0.1)
     walk_data = walk_parser(walk_file)
-    epocas = 3
-    max_membership = 25
+    epocas = 5
+    max_membership = 200
 
     input_dict = {}
     output_dict = {}
@@ -80,23 +81,31 @@ def trainning():
         for data in inputs:
             total_inputs.append(data)
     for body_part, inputs in input_dict.items():
+        input_ = input_dict[body_part]
         output = output_dict[body_part]
-        fuzzy_answer[body_part] = fuzzy(total_inputs,output,epocas=epocas,max_membership=max_membership)
+        fuzzy_answer[body_part] = fuzzy(input_,output,epocas=epocas,max_membership=max_membership)
 
 def plot_graphs():
     #generate "time" array
 
+    #hip, knee = get_angles_trainned().values()
+    with open("hip", "wb") as fp:   #Pickling
+        pickle.dump(momentums['Hip'], fp)
+    with open("knee", "wb") as fp:   #Pickling
+        pickle.dump(momentums['Knee'], fp)
+
     t = list(range(101))
     dt = 0.1
     t = np.arange(0.0, 100, dt)
+    t = walk_data['time']
+    fig = plt.figure()
+    ax = fig.add_subplot(1, 1, 1)
     for body_part in fuzzy_answer.keys():
-        fig = plt.figure()
-        ax = fig.add_subplot(1, 1, 1)
-        ax.plot(t,momentums[body_part], "b", label=f"{body_part} angle")
-        ax.plot(t,fuzzy_answer[body_part], "r", label=f"{body_part} fuzzy")
-        ax.legend(loc="best")
-        ax.grid()
-        plt.title(f"{body_part} results")
+        ax.plot(t,momentums[body_part], label=f"{body_part} angle")
+        ax.plot(t,fuzzy_answer[body_part], label=f"{body_part} fuzzy")
+    ax.legend(loc="best")
+    ax.grid()
+    plt.title(f"{body_part} results")
     plt.show()
 
 def main():

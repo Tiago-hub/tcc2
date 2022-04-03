@@ -44,7 +44,6 @@ w1 = 0.232*total_height
 w2 = 0.247*total_height
 l1 = 0.433*w1
 l2 = 0.434*w2
-
 pendulum_model = model.double_pendulum(m1, m2, l1, l2, w1, w2,b1=0,b2=0)
 y0 = [np.deg2rad(33.79816055297852), 0, 0, np.deg2rad(8.202593803405762), 0, 0]  # Initial state of the system
 dt = 0.1

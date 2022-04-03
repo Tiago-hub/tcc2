@@ -21,7 +21,7 @@ p.set_defaults(filename="walk1.csv")
 (opts, args) = p.parse_args()
 
 def setup():
-    global model, fuzzy, walk_file, walk_parser, walk_interpolation
+    global model, fuzzy, walk_file, walk_parser, walk_interpolation, dp_parser
     this_file_loc = os.path.abspath(__file__)
     this_file_path = Path(this_file_loc)
     simulation_folder = this_file_path.parents[0]
@@ -33,19 +33,20 @@ def setup():
     from fuzzy import fuzzy 
     from parser_walk import walk_parser
     from parser_walk import walk_interpolation
+    from parser_pendulum import dp_parser
 
 def trainning():
     global fuzzy_answer, angles, momentums
     fuzzy_answer = {}
     angles = {}
     momentums = {}
-    #walk_data = walk_interpolation(walk_parser(walk_file),0.1)
-    walk_data = walk_parser(walk_file)
-    epocas = 3
+    walk_data = dp_parser(walk_file)
+    epocas = 1
     max_membership = 25
 
     input_dict = {}
     output_dict = {}
+
     for data_name, data_list in walk_data.items():
         #the range of input list is the number of delays,
         #e.g range(4) -> input list will be a list with:
@@ -69,11 +70,17 @@ def trainning():
             input_dict[body_part] = input_list
             angles[body_part] = data_list
 
-        elif "momentum" in data_name.lower():
             output_list = data_list
             body_part = data_name.split(" ")[0]
             output_dict[body_part] = output_list
             momentums[body_part] = data_list
+
+        # elif "momentum" in data_name.lower():
+        #     output_list = data_list
+        #     body_part = data_name.split(" ")[0]
+        #     output_dict[body_part] = output_list
+        #     momentums[body_part] = data_list
+
 
     total_inputs = []
     for body_part, inputs in input_dict.items():
@@ -87,8 +94,9 @@ def plot_graphs():
     #generate "time" array
 
     t = list(range(101))
-    dt = 0.1
-    t = np.arange(0.0, 100, dt)
+    dt = 1
+    print(len(fuzzy_answer['ankle']))
+    t = range(len(fuzzy_answer['ankle']))
     for body_part in fuzzy_answer.keys():
         fig = plt.figure()
         ax = fig.add_subplot(1, 1, 1)

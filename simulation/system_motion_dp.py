@@ -22,6 +22,7 @@ import model2 as model
 from real_walk_train import get_angles_trainned
 from parser_walk import walk_parser
 from parser_walk import walk_interpolation
+from parser_pendulum import dp_parser
 
 usage = """Script to convert csv file with walking data to list.
 Place the csv file at data folder"""""
@@ -33,7 +34,7 @@ p.set_defaults(filename="walk1.csv")
 (opts, args) = p.parse_args()
 
 walk_file = f"{simulation_folder}/data/{opts.filename}"
-walk_data = walk_interpolation(walk_parser(walk_file),0.1)
+walk_data = walk_parser(walk_file)
 
 #constants
 total_mass = 73
@@ -44,7 +45,6 @@ w1 = 0.232*total_height
 w2 = 0.247*total_height
 l1 = 0.433*w1
 l2 = 0.434*w2
-
 pendulum_model = model.double_pendulum(m1, m2, l1, l2, w1, w2,b1=0,b2=0)
 y0 = [np.deg2rad(33.79816055297852), 0, 0, np.deg2rad(8.202593803405762), 0, 0]  # Initial state of the system
 dt = 0.1

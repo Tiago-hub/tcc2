@@ -25,7 +25,7 @@ def walk_parser(path_to_walk_file):
     with open(path_to_walk_file) as file:
         walk_data_temp = csv.DictReader(file)
         walk_keys = walk_data_temp.fieldnames
-        walk_data = {'Ankle Angle': [], 'Hip Angle': [], 'Knee Angle': [], 'Ankle Momentum': [], 'Hip Momentum': [], 'Knee Momentum': [], 'Ankle Power': [], 'Hip Power': [], 'Knee Power': []}
+        walk_data = {'time': [], 'Hip Angle': [], 'Knee Angle': [], 'Hip Momentum': [], 'Knee Momentum': []}
         for data in walk_data_temp:
             for key in data.keys():
                 walk_data[key].append(float(data[key]))
@@ -34,7 +34,7 @@ def walk_parser(path_to_walk_file):
 
 def walk_interpolation(walk_data, dt=0.1):
     t2 = np.arange(0.0, 100, dt)
-    walk_data_interpolation = {'Ankle Angle': [], 'Hip Angle': [], 'Knee Angle': [], 'Ankle Momentum': [], 'Hip Momentum': [], 'Knee Momentum': [], 'Ankle Power': [], 'Hip Power': [], 'Knee Power': []}
+    walk_data_interpolation = {'time': [], 'Hip Angle': [], 'Knee Angle': [], 'Hip Momentum': [], 'Knee Momentum': []}
     for key in walk_data.keys():
         t = range(len(walk_data[key]))
         fun = interp1d(t, walk_data[key], kind='cubic')
