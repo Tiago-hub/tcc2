@@ -131,6 +131,7 @@ class double_pendulum:
         # tal1 = self.tal1[t]
         # tal2 = self.tal2[t]
 
+        # model solved by hand
         # dxdt = np.array([   x2,
         #                     (1/(z*np.cos(x1-x3)-((a*e)/(b*np.cos(x1-x3)))))*(tal2-l2*x4**2-th*np.sin(x3)+n*x2**2*np.sin(x1-x3)-(e/(b*np.cos(x1-x3)))*(tal1-l1*x2**2-a*x2-g*x4**2*np.sin(x1-x3)-d*np.sin(x1))),
         #                     x4,
@@ -139,16 +140,32 @@ class double_pendulum:
         #                     tal2])
         #print(m1,m2,l1,l2,w1,w2)
         #print(x1,x2,x3,x4)
+
+        #first equation gotcha with matlab - lost the file
+        # dxdt = np.array([   x2,
+        #             (2*l2*tal1*cos(x3)**2 + 2*tal2*w1*cos(x3)**2 + 2*l2*tal1*sin(x3)**2 + 2*tal2*w1*sin(x3)**2 - 2*tal2*w1*cos(x1)*cos(x3) - 2*tal2*w1*sin(x1)*sin(x3) + l2**2*m2*w1*x4**2*cos(x1)*sin(x3)**3 - l2**2*m2*w1*x4**2*cos(x3)**3*sin(x1) - g*l1*l2*m1*cos(x3)**2*sin(x1) - g*l2*m2*w1*cos(x3)**2*sin(x1) - g*l1*l2*m1*sin(x1)*sin(x3)**2 + g*l2*m2*w1*cos(x1)*cos(x3)*sin(x3) - l2*m2*w1**2*x2**2*cos(x1)*cos(x3)**2*sin(x1) + l2*m2*w1**2*x2**2*cos(x1)**2*cos(x3)*sin(x3) + l2**2*m2*w1*x4**2*cos(x1)*cos(x3)**2*sin(x3) + l2*m2*w1**2*x2**2*cos(x1)*sin(x1)*sin(x3)**2 - l2*m2*w1**2*x2**2*cos(x3)*sin(x1)**2*sin(x3) - l2**2*m2*w1*x4**2*cos(x3)*sin(x1)*sin(x3)**2)/(l2*(l1**2*m1*cos(x1)**2*cos(x3)**2 + l1**2*m1*cos(x1)**2*sin(x3)**2 + l1**2*m1*cos(x3)**2*sin(x1)**2 + m2*w1**2*cos(x1)**2*sin(x3)**2 + m2*w1**2*cos(x3)**2*sin(x1)**2 + l1**2*m1*sin(x1)**2*sin(x3)**2 - 2*m2*w1**2*cos(x1)*cos(x3)*sin(x1)*sin(x3))) - b1*x2,
+        #             x4,
+        #             -(0 - 2*m2*tal2*w1**2*cos(x1)**2 - 2*l1**2*m1*tal2*sin(x1)**2 - 2*m2*tal2*w1**2*sin(x1)**2 - 2*l1**2*m1*tal2*cos(x1)**2 + 2*m2*tal2*w1**2*cos(x1)*cos(x3) + 2*m2*tal2*w1**2*sin(x1)*sin(x3) - l2*m2**2*w1**3*x2**2*cos(x3)*sin(x1)**3 + l2*m2**2*w1**3*x2**2*cos(x1)**3*sin(x3) + 2*l2*m2*tal1*w1*cos(x1)*cos(x3) + 2*l2*m2*tal1*w1*sin(x1)*sin(x3) + g*l2*m2**2*w1**2*cos(x1)**2*sin(x3) + g*l1**2*l2*m1*m2*sin(x1)**2*sin(x3) - l2*m2**2*w1**3*x2**2*cos(x1)**2*cos(x3)*sin(x1) + l2*m2**2*w1**3*x2**2*cos(x1)*sin(x1)**2*sin(x3) - g*l2*m2**2*w1**2*cos(x1)*cos(x3)*sin(x1) - l2**2*m2**2*w1**2*x4**2*cos(x1)*cos(x3)**2*sin(x1) + l2**2*m2**2*w1**2*x4**2*cos(x1)**2*cos(x3)*sin(x3) + l2**2*m2**2*w1**2*x4**2*cos(x1)*sin(x1)*sin(x3)**2 - l2**2*m2**2*w1**2*x4**2*cos(x3)*sin(x1)**2*sin(x3) + g*l1**2*l2*m1*m2*cos(x1)**2*sin(x3) - g*l1*l2*m1*m2*w1*sin(x1)**2*sin(x3) - l1**2*l2*m1*m2*w1*x2**2*cos(x3)*sin(x1)**3 + l1**2*l2*m1*m2*w1*x2**2*cos(x1)**3*sin(x3) - g*l1*l2*m1*m2*w1*cos(x1)*cos(x3)*sin(x1) - l1**2*l2*m1*m2*w1*x2**2*cos(x1)**2*cos(x3)*sin(x1) + l1**2*l2*m1*m2*w1*x2**2*cos(x1)*sin(x1)**2*sin(x3))/(m2*(l1**2*l2**2*m1*cos(x1)**2*cos(x3)**2 + l1**2*l2**2*m1*cos(x1)**2*sin(x3)**2 + l1**2*l2**2*m1*cos(x3)**2*sin(x1)**2 + l2**2*m2*w1**2*cos(x1)**2*sin(x3)**2 + l2**2*m2*w1**2*cos(x3)**2*sin(x1)**2 + l1**2*l2**2*m1*sin(x1)**2*sin(x3)**2 - 2*l2**2*m2*w1**2*cos(x1)*cos(x3)*sin(x1)*sin(x3))) - b2*x4,
+        #             ])
+
+        #model with wolfram mathematica wich I have the solution file
+        # dxdt = np.array([   x2,
+        #             -((-l2*w1*cos(x1-x3)*(-2*tal2+b2*x4-l2*w1*x2*x4*sin(x1-x3)+g*l2*m2*sin(x3)-l2*w1*x2**2*sin(x1-x3)+l2*w1*x2*x4*sin(x1-x3)+l2*m2*(-2*tal1-((2*tal2*w1)/l2)+b1*x2-l2*w1*x2*x4+g*l1*m1*sin(x1)+g*m2*w1*sin(x1)-l2*w1*x1*x4*sin(x1-x3)+l2*w1*x2*x4*sin(x1-x3)+l2*w1*x4**2*sin(x1-x3)))/(l2*m2*(l1**2*m1+m2*w2**2)-l2**2*w1**2*cos(x1-x3)**2))),
+        #             x4,
+        #             -((2*l1**2*m1*tal2+2*m2*tal2*w2**2-b2*l1**2*m1*x4-b2**m2*w2**2*x4-2*l2*tal1*w1*cos(x1-x3)-2*tal2*w1**2*cos(x1-x3)+b1*l2*w1*x2*cos(x1-x3)-l2**2*w1**2*x2*x4*cos(x1-x3)+g*l1*l2*m1*w1*cos(x1-x3)*sin(x1)+g+l2*m2*w1**2*cos(x1-x3)*sin(x1)+l1**2*l2*m1*w1*x2*x4*sin(x1-x3)+l2*m2*w1*w2**2*x2*x4*sin(x1-x3)-g*l1**2*l2*m1*m2*sin(x3)-g*l2*m2**2*w2**2*sin(x3)+l1**2*l2*m1*w1*x2**2*sin(x1-x3)+l2*m2*w1*w2**2*sin(x1-x3)-l1**2*l2*m1*w1*x2*x4*sin(x1-x3)-l2*m2*w1*w2**2*x2*x4*sin(x1-x3)-l2**2*w1**2*x1*x4*cos(x1-x4)*sin(x1-x4)+l2**2*w1**2*x2*x4*cos(x1-x3)*sin(x1-x3)+l2**2*w1**2*x4**2*cos(x1-x3)*sin(x1-x3))/(l2*(-l1**2*m1*m2-m2**2*w2**2+l2*w1**2*cos(x1-x3)**2)))
+        #             ])
+
         dxdt = np.array([   x2,
-                    (2*l2*tal1*cos(x3)**2 + 2*tal2*w1*cos(x3)**2 + 2*l2*tal1*sin(x3)**2 + 2*tal2*w1*sin(x3)**2 - 2*tal2*w1*cos(x1)*cos(x3) - 2*tal2*w1*sin(x1)*sin(x3) + l2**2*m2*w1*x4**2*cos(x1)*sin(x3)**3 - l2**2*m2*w1*x4**2*cos(x3)**3*sin(x1) - g*l1*l2*m1*cos(x3)**2*sin(x1) - g*l2*m2*w1*cos(x3)**2*sin(x1) - g*l1*l2*m1*sin(x1)*sin(x3)**2 + g*l2*m2*w1*cos(x1)*cos(x3)*sin(x3) - l2*m2*w1**2*x2**2*cos(x1)*cos(x3)**2*sin(x1) + l2*m2*w1**2*x2**2*cos(x1)**2*cos(x3)*sin(x3) + l2**2*m2*w1*x4**2*cos(x1)*cos(x3)**2*sin(x3) + l2*m2*w1**2*x2**2*cos(x1)*sin(x1)*sin(x3)**2 - l2*m2*w1**2*x2**2*cos(x3)*sin(x1)**2*sin(x3) - l2**2*m2*w1*x4**2*cos(x3)*sin(x1)*sin(x3)**2)/(l2*(l1**2*m1*cos(x1)**2*cos(x3)**2 + l1**2*m1*cos(x1)**2*sin(x3)**2 + l1**2*m1*cos(x3)**2*sin(x1)**2 + m2*w1**2*cos(x1)**2*sin(x3)**2 + m2*w1**2*cos(x3)**2*sin(x1)**2 + l1**2*m1*sin(x1)**2*sin(x3)**2 - 2*m2*w1**2*cos(x1)*cos(x3)*sin(x1)*sin(x3))) - b1*x2,
+-(b1*l1*l2*x2 - 2*l2*tal2*w1 - 2*l1*l2*tal1 + 2*l1*tal2*w1*cos(x1 - x3) - b2*l1*w1*x4*cos(x1 - x3) + g*l1**2*l2*m1*sin(x1) + g*l1*l2*m2*w1*sin(x1) + l1*l2**2*m2*w1*x4**2*sin(x1 - x3) - g*l1*l2*m2*w1*cos(x1 - x3)*sin(x3) + l1*l2*m2*w1**2*x2**2*cos(x1 - x3)*sin(x1 - x3))/(l1*l2*(l1**2*m1 + m2*w1**2 - m2*w1**2*cos(x1 - x3)**2)),
                     x4,
-                    -(0 - 2*m2*tal2*w1**2*cos(x1)**2 - 2*l1**2*m1*tal2*sin(x1)**2 - 2*m2*tal2*w1**2*sin(x1)**2 - 2*l1**2*m1*tal2*cos(x1)**2 + 2*m2*tal2*w1**2*cos(x1)*cos(x3) + 2*m2*tal2*w1**2*sin(x1)*sin(x3) - l2*m2**2*w1**3*x2**2*cos(x3)*sin(x1)**3 + l2*m2**2*w1**3*x2**2*cos(x1)**3*sin(x3) + 2*l2*m2*tal1*w1*cos(x1)*cos(x3) + 2*l2*m2*tal1*w1*sin(x1)*sin(x3) + g*l2*m2**2*w1**2*cos(x1)**2*sin(x3) + g*l1**2*l2*m1*m2*sin(x1)**2*sin(x3) - l2*m2**2*w1**3*x2**2*cos(x1)**2*cos(x3)*sin(x1) + l2*m2**2*w1**3*x2**2*cos(x1)*sin(x1)**2*sin(x3) - g*l2*m2**2*w1**2*cos(x1)*cos(x3)*sin(x1) - l2**2*m2**2*w1**2*x4**2*cos(x1)*cos(x3)**2*sin(x1) + l2**2*m2**2*w1**2*x4**2*cos(x1)**2*cos(x3)*sin(x3) + l2**2*m2**2*w1**2*x4**2*cos(x1)*sin(x1)*sin(x3)**2 - l2**2*m2**2*w1**2*x4**2*cos(x3)*sin(x1)**2*sin(x3) + g*l1**2*l2*m1*m2*cos(x1)**2*sin(x3) - g*l1*l2*m1*m2*w1*sin(x1)**2*sin(x3) - l1**2*l2*m1*m2*w1*x2**2*cos(x3)*sin(x1)**3 + l1**2*l2*m1*m2*w1*x2**2*cos(x1)**3*sin(x3) - g*l1*l2*m1*m2*w1*cos(x1)*cos(x3)*sin(x1) - l1**2*l2*m1*m2*w1*x2**2*cos(x1)**2*cos(x3)*sin(x1) + l1**2*l2*m1*m2*w1*x2**2*cos(x1)*sin(x1)**2*sin(x3))/(m2*(l1**2*l2**2*m1*cos(x1)**2*cos(x3)**2 + l1**2*l2**2*m1*cos(x1)**2*sin(x3)**2 + l1**2*l2**2*m1*cos(x3)**2*sin(x1)**2 + l2**2*m2*w1**2*cos(x1)**2*sin(x3)**2 + l2**2*m2*w1**2*cos(x3)**2*sin(x1)**2 + l1**2*l2**2*m1*sin(x1)**2*sin(x3)**2 - 2*l2**2*m2*w1**2*cos(x1)*cos(x3)*sin(x1)*sin(x3))) - b2*x4,
+(2*l1**3*m1*tal2 - b2*l1**3*m1*x4 + 2*l1*m2*tal2*w1**2 - 2*l2*m2*tal2*w1**2*cos(x1 - x3) - b2*l1*m2*w1**2*x4 - g*l1*l2*m2**2*w1**2*sin(x3) - 2*l1*l2*m2*tal1*w1*cos(x1 - x3) - g*l1**3*l2*m1*m2*sin(x3) + l1*l2*m2**2*w1**3*x2**2*sin(x1 - x3) + b1*l1*l2*m2*w1*x2*cos(x1 - x3) + g*l1*l2*m2**2*w1**2*cos(x1 - x3)*sin(x1) + l1*l2**2*m2**2*w1**2*x4**2*cos(x1 - x3)*sin(x1 - x3) + l1**3*l2*m1*m2*w1*x2**2*sin(x1 - x3) + g*l1**2*l2*m1*m2*w1*cos(x1 - x3)*sin(x1))/(l1*l2**2*m2*(l1**2*m1 + m2*w1**2 - m2*w1**2*cos(x1 - x3)**2)) ,
                     ])
 
-        #print(dxdt)
- 
+
+
+
         # print(x)
-        # print(dxdt)
+        #print(dxdt)
         # print('tal after')
         # print(tal1, tal2)
         

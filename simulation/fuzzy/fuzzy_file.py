@@ -5,6 +5,8 @@ output: the most parecido com y possible
 import numpy as np
 import matplotlib.pyplot as plt
 import time
+import optparse
+import csv
 
 def fuzzy(x,y,epocas=1,max_membership=25,return_network=False):
     from classes import NFN, membership,neuron
@@ -89,6 +91,11 @@ def mean_squared_error(array1,array2):
 
 if __name__ == "__main__":
     start_time = time.time()
+    p = optparse.OptionParser(usage=usage)
+    p.add_option("-f", "--file", dest="filename",
+                    help="csv file name with walk info. Must be at data folder", metavar="FILE")
+    p.set_defaults(filename="walk1.csv")
+    (opts, args) = p.parse_args()
 
     x = [[0]*(1000) for i in range(4)]
     y = [] * 1000
@@ -111,21 +118,11 @@ if __name__ == "__main__":
 
     y=np.sin(t)
 
-    neural_ntw = fuzzy(x,y,max_membership=100,epocas=2, return_network=True)
-    print(neural_ntw.neurons)
-
-    output = [[0]*len(x[0]) for i in range(1)]
-
-    for t in range(len(x[0])):
-        x_input = []
-        for i in range(len(x)):
-            x_input += [x[i][t]]
-        output[0][t]=(neural_ntw.calc(x_input))
-
+    output = fuzzy(x,y,max_membership=100,epocas=2)
     fig = plt.figure()
     ax = fig.add_subplot(1, 1, 1)
     ax.plot(x[0],y, label="Sinal original")
-    ax.plot(x[0],output[0], label="Replicação pela rede nebulosa")
+    ax.plot(x[0],output, label="Replicação pela rede nebulosa")
     ax.grid()
     ax.annotate(f"MSE: {mean_squared_error(y,output):.3}",(0,-0.5))
     plt.title('Rede neo-nebulosa replica função seno')

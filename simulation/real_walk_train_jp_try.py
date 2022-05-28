@@ -25,12 +25,6 @@ p.add_option("-f", "--file", dest="filename",
 p.set_defaults(filename="walk1.csv")
 (opts, args) = p.parse_args()
 
-def mean_squared_error(array1,array2):
-    difference_array = np.subtract(array1, array2)
-    squared_array = np.square(difference_array)
-    mse = squared_array.mean()
-    return mse
-
 def setup():
     global model, fuzzy, walk_file, walk_parser, walk_interpolation, epocas, max_membership, t_minus_1
     this_file_loc = os.path.abspath(__file__)
@@ -46,8 +40,8 @@ def setup():
     from parser_walk_jp import walk_interpolation
 
     epocas = 2
-    max_membership = 200
-    t_minus_1 = 1
+    max_membership = 50
+    t_minus_1 = 5
 
 def trainning():
     global fuzzy_answer, angles, momentums, walk_data, epocas, max_membership, t_minus_1
@@ -56,7 +50,6 @@ def trainning():
     momentums = {}
     #walk_data = walk_interpolation(walk_parser(walk_file),0.1)
     walk_data = walk_parser(walk_file)
-
     input_dict = {}
     output_dict = {}
     for data_name, data_list in walk_data.items():
@@ -66,8 +59,12 @@ def trainning():
         input_list = [[] for i in range(t_minus_1)]
         output_list = []
 
-        if "angle" in data_name.lower():
+        if "momentum" in data_name.lower():
             #shift in time
+            output_list = data_list
+            body_part = data_name.split(" ")[0]
+            output_dict[body_part] = output_list
+            momentums[body_part] = data_list
             for i in range(len(input_list)):
                 if i == 0:
                     input_list[i] = data_list
@@ -75,37 +72,24 @@ def trainning():
                 temp_list = collections.deque(data_list) 
                 temp_list.rotate(i)
                 data_list_delay= list(temp_list)
-                data_list_delay[i-1] = 0
+                for j in range(i):
+                    data_list_delay[j] = 0
                 input_list[i] = data_list_delay
 
             body_part = data_name.split(" ")[0]
             input_dict[body_part] = input_list
             angles[body_part] = data_list
 
-        elif "momentum" in data_name.lower():
-            output_list = data_list
-            body_part = data_name.split(" ")[0]
-            output_dict[body_part] = output_list
-            momentums[body_part] = data_list
+        # elif "angle" in data_name.lower():
+        #     output_list = data_list
+        #     body_part = data_name.split(" ")[0]
+        #     output_dict[body_part] = output_list
+        #     momentums[body_part] = data_list
 
     total_inputs = []
     for body_part, inputs in input_dict.items():
         for data in inputs:
             total_inputs.append(data)
-    delay_que_quero = 3
-    for data_name, data_list in walk_data.items():
-        if "time" in data_name.lower():
-        #shift in time
-            for i in range(delay_que_quero):
-                if i == 0:
-                    total_inputs.append(data_list)
-                    continue
-                temp_list = collections.deque(data_list) 
-                temp_list.rotate(i)
-                data_list_delay= list(temp_list)
-                data_list_delay[i-1] = 0
-                total_inputs.append(data_list_delay)
-    
     for body_part, inputs in input_dict.items():
         input_ = input_dict[body_part]
         output = output_dict[body_part]
@@ -116,9 +100,9 @@ def plot_graphs():
     #generate "time" array
 
     hip, knee = get_angles_trainned().values()
-    with open(f"epocas_{epocas}_membership_{max_membership}_delays_{t_minus_1}_hip", "wb") as fp:   #Pickling
+    with open(f"epocas_{epocas}_membership_{max_membership}_delays_{t_minus_1}_hip_reduced", "wb") as fp:   #Pickling
         pickle.dump(momentums['Hip'], fp)
-    with open(f"epocas_{epocas}_membership_{max_membership}_delays_{t_minus_1}_knee", "wb") as fp:   #Pickling
+    with open(f"epocas_{epocas}_membership_{max_membership}_delays_{t_minus_1}_knee_reduced", "wb") as fp:   #Pickling
         pickle.dump(momentums['Knee'], fp)
 
     t = list(range(101))
@@ -135,7 +119,7 @@ def plot_graphs():
     # plt.title(f"{body_part} results")
     # plt.show()
 
-    plt.subplot(2, 1, 1)
+    plt.subplot(2, 2, 1)
     plt.plot(t, momentums['Hip'], 'g', label='Torque 1')
     plt.plot(t, fuzzy_answer['Hip'], 'r', label='Torque Fuzzy 1')
     plt.title('Fuzzy Trainning Torque 1')
@@ -143,11 +127,25 @@ def plot_graphs():
     plt.grid()
     plt.legend(loc="best")
 
-    plt.subplot(2, 1, 2)
+    plt.subplot(2, 2, 2)
     plt.plot(t, momentums['Knee'], 'g', label='Torque 2')
     plt.plot(t, fuzzy_answer['Knee'], 'r', label='Torque Fuzzy 2')
     plt.title('Fuzzy Trainning Torque 2')
     plt.ylabel('Torque (Nm)')
+    plt.grid()
+    plt.legend(loc="best")
+
+    plt.subplot(2, 2, 3)
+    plt.plot(t, angles['Hip'], 'g', label='angle 1')
+    plt.title('Fuzzy Trainning angles 2')
+    plt.ylabel('angles (graus)')
+    plt.grid()
+    plt.legend(loc="best")
+
+    plt.subplot(2, 2, 4)
+    plt.plot(t, angles['Knee'], 'g', label='angles 2')
+    plt.title('Fuzzy Trainning angles 2')
+    plt.ylabel('angles (graus)')
     plt.grid()
     plt.legend(loc="best")
     # plot whatever you need...
@@ -155,7 +153,7 @@ def plot_graphs():
     figure = plt.gcf() # get current figure
     figure.set_size_inches(10.8, 7.2)
     # when saving, specify the DPI
-    #plt.savefig(f"epocas_{epocas}_membership_{max_membership}_delays_{t_minus_1}.png", dpi = 200)
+    #plt.savefig(f"epocas_{epocas}_membership_{max_membership}_delays_{t_minus_1}_reduced.png", dpi = 200)
     plt.show()
     
 

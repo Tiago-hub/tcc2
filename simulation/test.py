@@ -52,6 +52,8 @@ m2 = 0.249*1
 # M2 = 0.9
 w1 = 0.270*2
 w2 = 2*0.210 - 0*(0.210 - 2*0.09)/2
+# w1 = 4
+# w2 = 4
 L1 = w1
 L2 = w2
 # w1=L1
@@ -67,9 +69,11 @@ I_2 = 0.00297
 # l2 = 1
 # w1 = 1.5
 # w2 = 1.5
-with open("hip", "rb") as fp:   # Unpickling
+hip_filename = "epocas_2_membership_50_delays_5_hip_reduced"
+knee_filename = "epocas_2_membership_50_delays_5_knee_reduced"
+with open(hip_filename, "rb") as fp:   # Unpickling
     hip = pickle.load(fp)
-with open("knee", "rb") as fp:   # Unpickling
+with open(knee_filename, "rb") as fp:   # Unpickling
     knee = pickle.load(fp)
 
 hip = hip[:-22]
@@ -88,15 +92,17 @@ hip_dict = {}
 knee_dict = {}
 
 for index in range(len(hip)):
-    # hip_dict[t[index]] = hip[index]
-    knee_dict[t[index]] = knee[index]
-    # knee_dict[t[index]] = 0
-    hip_dict[t[index]] = 0
+    #hip_dict[t[index]] = hip[index]
+    #knee_dict[t[index]] = knee[index]
+    knee_dict[t[index]] = 0
+    hip_dict[t[index]] = 1
 
 print(f"mass1: {m1}; mass2: {m2}")
 print(f"mass center 1: {w1}; mass center 2: {w2}")
 print(f"rod end 1: {w1}; mass center 2: {w2}")
-pendulum_model = model.double_pendulum(m1, m2, w1, w2, w1, w2,b1=0.5,b2=0.5, tal1=hip_dict, tal2=knee_dict)
+
+
+pendulum_model = model.double_pendulum(m1, m2, w1, w2, w1, w2,b1=0.01,b2=0.01, tal1=hip_dict, tal2=knee_dict)
 
 
 def derivs(state, t):
@@ -194,7 +200,8 @@ def animate(i):
 
 ani = animation.FuncAnimation(
     fig, animate, len(y), interval=dt*1000, blit=True)
-plt.show()
+#plt.show()
+ani.save('pen.gif',writer='pillow',fps=30)
 
 
 fig = plt.figure()
@@ -222,5 +229,13 @@ ax.plot(t, knee, 'r', label='Angular Acceleration knee')
 ax.legend(loc='best')
 #plt.xlim([0, 5])
 #plt.ylim([-20, 20])
+ax.grid()
+plt.show()
+
+fig = plt.figure()
+ax = fig.add_subplot(1, 1, 1)
+ax.plot(t, np.rad2deg(y[:,0]), 'r', label='hip(t)')
+ax.plot(t, np.rad2deg(y[:,2]), 'y', label='Knee(t)')
+ax.legend(loc='best')
 ax.grid()
 plt.show()

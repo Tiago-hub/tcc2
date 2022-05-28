@@ -1,7 +1,9 @@
+import time
 from classes import NFN, membership,neuron
 import numpy as np
 import matplotlib.pyplot as plt
 
+start_time = time.time()
 def matrix_size(matrix):
     rows = len(matrix)
     columns = len(matrix[0])
@@ -128,4 +130,5 @@ ax = fig.add_subplot(1, 1, 1)
 ax.plot(x[0],y[0])
 ax.plot(x[0],output[0])
 ax.grid()
+print("--- Trainning took %s seconds ---" % (time.time() - start_time))
 plt.show()

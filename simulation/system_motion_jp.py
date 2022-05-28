@@ -107,10 +107,11 @@ def derivs(t, state):
 #     pickle.dump(hip, fp)
 # with open("knee", "wb") as fp:   #Pickling
 #     pickle.dump(knee, fp)
-
-with open("hip", "rb") as fp:   # Unpickling
+hip_filename = "epocas_10_membership_1000_delays_10_hip"
+knee_filename = "epocas_10_membership_1000_delays_10_knee"
+with open(hip_filename, "rb") as fp:   # Unpickling
     hip = pickle.load(fp)
-with open("knee", "rb") as fp:   # Unpickling
+with open(knee_filename, "rb") as fp:   # Unpickling
     knee = pickle.load(fp)
 #files
 #walk_data = walk_interpolation(walk_parser(walk_file),0.1)
