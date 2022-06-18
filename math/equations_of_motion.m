@@ -12,15 +12,12 @@ V = -m1*g*l1*cos(q1) - m2*g*(w1*cos(q1)+l2*cos(q2));
 L = T - V;
 
 display("L = ");
-pretty(L);
+display(L);
 
 dLdq1 = diff(L,q1);
 dLdq2 = diff(L,q2);
 dLdq1p = diff(L,q1p);
 dLdq2p = diff(L,q2p);
-
-
-%dtdLdq1 = -g l1 m1 q1p cos(q1) - g m2 q1p cos(q1) w1 - l2 m2 p^2 q1(t) q2(t) ?_1 (q1'(t) - q2'(t)) cos(q1(t) - q2(t)) - l2 m2 p^2 q2(t) q1'(t) ?_1 sin(q1(t) - q2(t)) - l2 m2 p^2 q1(t) q2'(t) ?_1 sin(q1(t) - q2(t))
 
 %%
 syms q1p(t) q2p(t) q1(t) q2(t)

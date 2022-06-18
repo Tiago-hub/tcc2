@@ -69,20 +69,20 @@ I_2 = 0.00297
 # l2 = 1
 # w1 = 1.5
 # w2 = 1.5
-hip_filename = "epocas_2_membership_50_delays_5_hip_reduced"
-knee_filename = "epocas_2_membership_50_delays_5_knee_reduced"
-with open(hip_filename, "rb") as fp:   # Unpickling
-    hip = pickle.load(fp)
-with open(knee_filename, "rb") as fp:   # Unpickling
-    knee = pickle.load(fp)
+# hip_filename = "epocas_2_membership_50_delays_5_hip_reduced"
+# knee_filename = "epocas_2_membership_50_delays_5_knee_reduced"
+# with open(hip_filename, "rb") as fp:   # Unpickling
+#     hip = pickle.load(fp)
+# with open(knee_filename, "rb") as fp:   # Unpickling
+#     knee = pickle.load(fp)
 
-hip = hip[:-22]
-knee = knee[:-22]
+# hip = hip[:-22]
+# knee = knee[:-22]
 walk_data['Hip Angle'] = walk_data['Hip Angle'][:-22]
 walk_data['Knee Angle'] = walk_data['Knee Angle'][:-22]
 
-hip = list(map(lambda x: x * I_1, hip))
-knee = list(map(lambda x: x * I_2, knee))
+# hip = list(map(lambda x: x * I_1, hip))
+# knee = list(map(lambda x: x * I_2, knee))
 
 # create a time array from 0..t_stop sampled at 0.02 second steps
 dt = 0.02
@@ -91,11 +91,11 @@ t = np.arange(0, t_stop, dt)
 hip_dict = {}
 knee_dict = {}
 
-for index in range(len(hip)):
+for index in range(len(t)):
     #hip_dict[t[index]] = hip[index]
     #knee_dict[t[index]] = knee[index]
     knee_dict[t[index]] = 0
-    hip_dict[t[index]] = 1
+    hip_dict[t[index]] = 0
 
 print(f"mass1: {m1}; mass2: {m2}")
 print(f"mass center 1: {w1}; mass center 2: {w2}")
@@ -146,9 +146,9 @@ def derivs(state, t):
 
 # th1 and th2 are the initial angles (degrees)
 # w10 and w20 are the initial angular velocities (degrees per second)
-th1 = np.deg2rad(0)
+th1 = np.deg2rad(120)
 w1 = 0.0
-th2 = np.deg2rad(0)
+th2 = np.deg2rad(30)
 w2 = 0.0
 tal1 = 0
 tal2 = 0
@@ -200,36 +200,55 @@ def animate(i):
 
 ani = animation.FuncAnimation(
     fig, animate, len(y), interval=dt*1000, blit=True)
-#plt.show()
-ani.save('pen.gif',writer='pillow',fps=30)
+plt.show()
+#ani.save('pen.gif',writer='pillow',fps=30)
 
+def wrapToPi(x):
+    xwrap = np.remainder(x, 2 * np.pi)
+    mask = np.abs(xwrap) > np.pi
+    xwrap[mask] -= 2 * np.pi * np.sign(xwrap[mask])
+    mask1 = x < 0
+    mask2 = np.remainder(x, np.pi) == 0
+    mask3 = np.remainder(x, 2 * np.pi) != 0
+    xwrap[mask1 & mask2 & mask3] -= 2 * np.pi
+    return xwrap
 
 fig = plt.figure()
-ax = fig.add_subplot(3, 1, 1)
-ax.plot(t, np.rad2deg(y[:,0]), 'b', label='hip(t)')
-ax.plot(t, np.rad2deg(walk_data['Hip Angle']), 'g', label='Hip reference')
+ax = fig.add_subplot(1, 1, 1)
+ax.set_ylabel("Ângulo (°)")
+plt.title("Ângulos de modelo do pêndulo duplo emulando perna em movimento livre")
+x = np.array([a%(2*np.pi) for a in y[:,0]])
+x=wrapToPi(x)
+ax.plot(t, np.rad2deg(x), 'b', label='Quadril(t)')
+# ax.plot(t, np.rad2deg([a%(2*np.pi) for a in walk_data['Hip Angle']]), 'g', label='Hip reference')
 ax.legend(loc='best')
 #plt.xlim([0, 5])
 #plt.ylim([-20, 20])
-ax.grid()
 
-ax = fig.add_subplot(3, 1, 2)
-ax.plot(t, np.rad2deg(y[:,2]), 'r', label='knee(t)')
-ax.plot(t, np.rad2deg(walk_data['Knee Angle']), 'y', label='Knee reference')
+# ax = fig.add_subplot(2, 1, 2)
+x = np.array([a%(2*np.pi) for a in y[:,2]])
+x=wrapToPi(x)
+# ax.set_ylabel("Ângulo (°)")
+ax.plot(t, np.rad2deg(x), 'r', label='Joelho(t)')
+# ax.plot(t, np.rad2deg([a%(2*np.pi) for a in walk_data['Knee Angle']]), 'y', label='Knee reference')
 ax.legend(loc='best')
 ax.grid()
+ax.set_xlabel("tempo (s)")
+plt.ylim([-180, 180])
+plt.xlim([0, 10])
 
-ax = fig.add_subplot(3, 1, 3)
-ax.plot(t, hip, 'b', label='Angular Acceleration Hip')
-# ax.plot(t,hip,'g', label='fuzzy hip')
-#ax.plot(t, result[1], 'g', label='x2(t)')
-ax.plot(t, knee, 'r', label='Angular Acceleration knee')
-# ax.plot(t,knee,'y', label='fuzzy knee')
-#ax.plot(t, result[3], 'y', label='x4(t)')
-ax.legend(loc='best')
-#plt.xlim([0, 5])
-#plt.ylim([-20, 20])
-ax.grid()
+
+# ax = fig.add_subplot(3, 1, 3)
+# ax.plot(t, hip, 'b', label='Angular Acceleration Hip')
+# # ax.plot(t,hip,'g', label='fuzzy hip')
+# #ax.plot(t, result[1], 'g', label='x2(t)')
+# ax.plot(t, knee, 'r', label='Angular Acceleration knee')
+# # ax.plot(t,knee,'y', label='fuzzy knee')
+# #ax.plot(t, result[3], 'y', label='x4(t)')
+# ax.legend(loc='best')
+# #plt.xlim([0, 5])
+# #plt.ylim([-20, 20])
+# ax.grid()
 plt.show()
 
 fig = plt.figure()

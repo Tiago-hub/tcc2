@@ -1,0 +1,202 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>equations_of_motion</title><meta name="generator" content="MATLAB 9.5"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2022-06-05"><meta name="DC.source" content="equations_of_motion.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; } 
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><pre class="codeinput">clear <span class="string">all</span>
+syms <span class="string">x1</span> <span class="string">y1</span> <span class="string">x2</span> <span class="string">y2</span>
+syms <span class="string">x1p</span> <span class="string">y1p</span> <span class="string">x2p</span> <span class="string">y2p</span>
+syms <span class="string">q1</span> <span class="string">q2</span> <span class="string">q1p</span> <span class="string">q2p</span>
+syms <span class="string">m1</span> <span class="string">m2</span> <span class="string">l1</span> <span class="string">l2</span> <span class="string">w1</span> <span class="string">w2</span>
+syms <span class="string">g</span>
+syms <span class="string">L</span>
+
+T = 1/2*(m1*l1^2*q1p^2 + m2*(w1^2*q1p^2 + l2^2*q2p^2 + 2*w1*l2*q1p*q2p*cos(q1-q2)));
+V = -m1*g*l1*cos(q1) - m2*g*(w1*cos(q1)+l2*cos(q2));
+
+L = T - V;
+
+display(<span class="string">"L = "</span>);
+display(L);
+
+dLdq1 = diff(L,q1);
+dLdq2 = diff(L,q2);
+dLdq1p = diff(L,q1p);
+dLdq2p = diff(L,q2p);
+</pre><pre class="codeoutput">    "L = "
+
+ 
+L =
+ 
+(m2*(l2^2*q2p^2 + 2*cos(q1 - q2)*l2*q1p*q2p*w1 + q1p^2*w1^2))/2 + (l1^2*m1*q1p^2)/2 + g*m2*(l2*cos(q2) + w1*cos(q1)) + g*l1*m1*cos(q1)
+ 
+</pre><pre class="codeinput">syms <span class="string">q1p(t)</span> <span class="string">q2p(t)</span> <span class="string">q1(t)</span> <span class="string">q2(t)</span>
+dLdq1p = m1*q1p(t)*l1^2 + (m2*(2*q1p(t)*w1^2 + 2*l2*q2p(t)*cos(q1 - q2)*w1))/2;
+
+dLdq2p = (m2*(2*q2p(t)*l2^2 + 2*q1p(t)*w1*cos(q1 - q2)*l2))/2;
+
+dtdLdq1p = diff(dLdq1p,t);
+dtdLdq2p = diff(dLdq2p,t);
+</pre><pre class="codeinput">syms <span class="string">x1</span> <span class="string">x2</span> <span class="string">x3</span> <span class="string">x4</span>
+syms <span class="string">x1p</span> <span class="string">y1p</span> <span class="string">x2p</span> <span class="string">y2p</span>
+syms <span class="string">q1</span> <span class="string">q2</span> <span class="string">q1p</span> <span class="string">q2p</span> <span class="string">q1pp</span> <span class="string">q2pp</span>
+syms <span class="string">m1</span> <span class="string">m2</span> <span class="string">l1</span> <span class="string">l2</span> <span class="string">w1</span> <span class="string">w2</span>
+syms <span class="string">g</span>
+syms <span class="string">L</span>
+syms <span class="string">tal1</span> <span class="string">tal2</span> <span class="string">b1</span> <span class="string">b2</span>
+
+<span class="comment">%solution drive by hand (need to do revision on web page)</span>
+dtdLdq1p = m1*l1^2*q1pp + m2*w1^2*q1pp + m2*w1*l2*q2pp*cos(q1-q2) - m2*w1*l2*q2p*sin(q1-q2)*q1p + m2*w1*l2*q2p*sin(q1-q2)*q2p;
+dtdLdq2p = m2*l2^2*q2pp + m2*w1*l2*q1pp*cos(q1-q2) - m2*w1*l2*q1p*sin(q1-q2)*q1p + m2*w1*l2*q1p*sin(q1-q2)*q2p;
+q_vec = [q1,q1p,q2,q2p];
+x_vec = [x1,x2,x3,x4];
+
+dLdq1 = subs(dLdq1,q_vec,x_vec);
+dLdq2 = subs(dLdq2,q_vec,x_vec);
+dtdLdq1p = subs(dtdLdq1p,q_vec,x_vec);
+dtdLdq2p = subs(dtdLdq2p,q_vec,x_vec);
+
+eqns = [dtdLdq1p - dLdq1 == 2*tal1+2*(w1/l1)*tal2-b1*x2 ; dtdLdq2p - dLdq2 == 2*tal2-b2*x4];
+S = solve(eqns,[q1pp;q2pp]);
+display(<span class="string">"q1pp"</span>);
+S.q1pp
+display(<span class="string">"q2pp"</span>);
+S.q2pp
+</pre><pre class="codeoutput">    "q1pp"
+
+ 
+ans =
+ 
+-(b1*l1*l2*x2 - 2*l2*tal2*w1 - 2*l1*l2*tal1 + 2*l1*tal2*w1*cos(x1 - x3) - b2*l1*w1*x4*cos(x1 - x3) + g*l1^2*l2*m1*sin(x1) + g*l1*l2*m2*w1*sin(x1) + l1*l2^2*m2*w1*x4^2*sin(x1 - x3) - g*l1*l2*m2*w1*cos(x1 - x3)*sin(x3) + l1*l2*m2*w1^2*x2^2*cos(x1 - x3)*sin(x1 - x3))/(l1*l2*(l1^2*m1 + m2*w1^2 - m2*w1^2*cos(x1 - x3)^2))
+ 
+    "q2pp"
+
+ 
+ans =
+ 
+(2*l1^3*m1*tal2 - b2*l1^3*m1*x4 + 2*l1*m2*tal2*w1^2 - 2*l2*m2*tal2*w1^2*cos(x1 - x3) - b2*l1*m2*w1^2*x4 - g*l1*l2*m2^2*w1^2*sin(x3) - 2*l1*l2*m2*tal1*w1*cos(x1 - x3) - g*l1^3*l2*m1*m2*sin(x3) + l1*l2*m2^2*w1^3*x2^2*sin(x1 - x3) + b1*l1*l2*m2*w1*x2*cos(x1 - x3) + g*l1*l2*m2^2*w1^2*cos(x1 - x3)*sin(x1) + l1*l2^2*m2^2*w1^2*x4^2*cos(x1 - x3)*sin(x1 - x3) + l1^3*l2*m1*m2*w1*x2^2*sin(x1 - x3) + g*l1^2*l2*m1*m2*w1*cos(x1 - x3)*sin(x1))/(l1*l2^2*m2*(l1^2*m1 + m2*w1^2 - m2*w1^2*cos(x1 - x3)^2))
+ 
+</pre><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2018b</a><br></p></div><!--
+##### SOURCE BEGIN #####
+clear all
+syms x1 y1 x2 y2
+syms x1p y1p x2p y2p
+syms q1 q2 q1p q2p
+syms m1 m2 l1 l2 w1 w2
+syms g
+syms L
+
+T = 1/2*(m1*l1^2*q1p^2 + m2*(w1^2*q1p^2 + l2^2*q2p^2 + 2*w1*l2*q1p*q2p*cos(q1-q2)));
+V = -m1*g*l1*cos(q1) - m2*g*(w1*cos(q1)+l2*cos(q2));
+
+L = T - V;
+
+display("L = ");
+display(L);
+
+dLdq1 = diff(L,q1);
+dLdq2 = diff(L,q2);
+dLdq1p = diff(L,q1p);
+dLdq2p = diff(L,q2p);
+
+%%
+syms q1p(t) q2p(t) q1(t) q2(t)
+dLdq1p = m1*q1p(t)*l1^2 + (m2*(2*q1p(t)*w1^2 + 2*l2*q2p(t)*cos(q1 - q2)*w1))/2;
+
+dLdq2p = (m2*(2*q2p(t)*l2^2 + 2*q1p(t)*w1*cos(q1 - q2)*l2))/2;
+
+dtdLdq1p = diff(dLdq1p,t);
+dtdLdq2p = diff(dLdq2p,t);
+
+%%
+syms x1 x2 x3 x4
+syms x1p y1p x2p y2p
+syms q1 q2 q1p q2p q1pp q2pp
+syms m1 m2 l1 l2 w1 w2
+syms g
+syms L
+syms tal1 tal2 b1 b2
+
+%solution drive by hand (need to do revision on web page)
+dtdLdq1p = m1*l1^2*q1pp + m2*w1^2*q1pp + m2*w1*l2*q2pp*cos(q1-q2) - m2*w1*l2*q2p*sin(q1-q2)*q1p + m2*w1*l2*q2p*sin(q1-q2)*q2p;
+dtdLdq2p = m2*l2^2*q2pp + m2*w1*l2*q1pp*cos(q1-q2) - m2*w1*l2*q1p*sin(q1-q2)*q1p + m2*w1*l2*q1p*sin(q1-q2)*q2p;
+q_vec = [q1,q1p,q2,q2p];
+x_vec = [x1,x2,x3,x4];
+
+dLdq1 = subs(dLdq1,q_vec,x_vec);
+dLdq2 = subs(dLdq2,q_vec,x_vec);
+dtdLdq1p = subs(dtdLdq1p,q_vec,x_vec);
+dtdLdq2p = subs(dtdLdq2p,q_vec,x_vec);
+
+eqns = [dtdLdq1p - dLdq1 == 2*tal1+2*(w1/l1)*tal2-b1*x2 ; dtdLdq2p - dLdq2 == 2*tal2-b2*x4];
+S = solve(eqns,[q1pp;q2pp]);
+display("q1pp");
+S.q1pp
+display("q2pp");
+S.q2pp
+
+##### SOURCE END #####
+--></body></html>

@@ -68,6 +68,14 @@ def trainning():
         "knee": [np.deg2rad(an) for an in walk_data["steps"][0]["angle"]["knee"]]
     }
     t = walk_data["steps"][0]["time"]
+    time_holder = t
+    angle_holder = angle
+    # xmax = max([abs(value) for value in angle["hip"]])
+    # angle["hip"] = [value/xmax for value in angle["hip"]]
+    # xmax = max([abs(value) for value in angle["knee"]])
+    # angle["knee"] = [value/xmax for value in angle["knee"]]
+    # xmax = max([abs(value) for value in t])
+    # t = [value/xmax for value in t]
     total_inputs = [
         angle["hip"],
         angle["knee"],
@@ -82,7 +90,9 @@ def trainning():
         delay_list(t,2),
         delay_list(t,3),
     ]
-    output = momentum["knee"]
+    output = momentum["hip"]
+    t = time_holder
+    angle = angle_holder
     fuzzy_answer = fuzzy(total_inputs,output,epocas=epocas,max_membership=max_membership)
     return fuzzy_answer, walk_data
 
@@ -116,10 +126,12 @@ def plot_graphs(fuzzy_answer, walk_data):
     # plt.show()
 
     plt.subplot(1, 1, 1)
-    plt.plot(t, momentums['Knee'], 'g', label='Torque 1')
-    plt.plot(t, fuzzy_answer, 'r', label='Torque Fuzzy 1')
-    plt.title('Fuzzy Trainning Torque 1')
+    plt.plot(t, momentums['Hip'], 'g', label='Referência')
+    plt.plot(t, fuzzy_answer, 'r', label='Rede neural')
+    plt.annotate(f"MSE: {mean_squared_error(momentums['Hip'],fuzzy_answer):.3}",(0,-0.3))
+    plt.title('Torque gerado pela rede neo-nebulosa para o quadril')
     plt.ylabel('Torque (Nm)')
+    plt.xlabel('Tempo (s)')
     plt.grid()
     plt.legend(loc="best")
 
