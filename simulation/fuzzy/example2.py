@@ -52,9 +52,6 @@ def setup(data_dict,input_keys,output_key):
             x[int(index)] = data_dict[key]
 
     return x, y
-    # for key in output_key:
-
-    # return 
 
 if __name__ == "__main__":
     data_dict = parser(walk_file)
@@ -73,28 +70,15 @@ if __name__ == "__main__":
     entum = data_dict["grau de entumescimento"]
 
     fig = plt.figure()
-    # ax = fig.add_subplot(1, 1, 1)
-    # ax.plot(temperature,entum, "o", label="Sinal original")
-    # ax.plot(temperature,output,"*",label="Replicação pela rede nebulosa")
-    # ax.grid()
-    # # ax.annotate(f"MSE: {mean_squared_error(y,output):.3}",(0,-0.5))
-    # plt.title('Rede neo-nebulosa replica grau de entumescimento')
-    # plt.xlabel("Temperatura [°C]")
-    # plt.ylabel('Grau de entumescimento [g/g]')
-    # plt.grid(visible=True)
-    # plt.legend(loc="best")
 
     ax = fig.add_subplot(1, 1, 1)
     ax.plot(temperature,entum, "o", label="Sinal original")
     ax.plot(extended_input,extended_output,"*", label="Replicação pela rede nebulosa")
     ax.grid()
-    # ax.annotate(f"MSE: {mean_squared_error(y,output):.3}",(0,-0.5))
     plt.title('Grau de entumescimento com mais variação de temperaturas')
-    # plt.ylabel('Torque (Nm)')
     plt.grid(visible=True)
     plt.legend(loc="best")
     plt.xlabel("Temperatura [°C]")
     plt.ylabel('Grau de entumescimento [g/g]')
 
-    #print()
     plt.show()

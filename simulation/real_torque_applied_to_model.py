@@ -8,7 +8,7 @@ from collections import deque
 import os
 import sys
 sys.path.append(os.path.join(os.path.dirname(__file__), "physical"))
-import model_test3 as model
+import model as model
 from scipy.integrate import odeint, solve_ivp
 import pickle
 

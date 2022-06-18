@@ -48,7 +48,7 @@ def setup():
     sys.path.append(f"{simulation_folder}/fuzzy")
     sys.path.append(f"{simulation_folder}/data_proccessing")
     walk_file = f"{simulation_folder}/data/{opts.filename}"
-    import model2 as model
+    import model as model
     from fuzzy import fuzzy
     from parser_mat import walk_parser
 
@@ -70,12 +70,7 @@ def trainning():
     t = walk_data["steps"][0]["time"]
     time_holder = t
     angle_holder = angle
-    # xmax = max([abs(value) for value in angle["hip"]])
-    # angle["hip"] = [value/xmax for value in angle["hip"]]
-    # xmax = max([abs(value) for value in angle["knee"]])
-    # angle["knee"] = [value/xmax for value in angle["knee"]]
-    # xmax = max([abs(value) for value in t])
-    # t = [value/xmax for value in t]
+
     total_inputs = [
         angle["hip"],
         angle["knee"],
@@ -93,10 +88,14 @@ def trainning():
     output = momentum["hip"]
     t = time_holder
     angle = angle_holder
-    fuzzy_answer = fuzzy(total_inputs,output,epocas=epocas,max_membership=max_membership)
-    return fuzzy_answer, walk_data
+    fuzzy_answer_hip = fuzzy(total_inputs,output,epocas=epocas,max_membership=max_membership)
 
-def plot_graphs(fuzzy_answer, walk_data):
+    output = momentum["knee"]
+    fuzzy_answer_knee = fuzzy(total_inputs,output,epocas=epocas,max_membership=max_membership)
+
+    return fuzzy_answer_hip, fuzzy_answer_knee, walk_data
+
+def plot_graphs(fuzzy_answer_hip, fuzzy_answer_knee, walk_data):
     global epocas, max_membership, t_minus_1
     #generate "time" array
     t = walk_data["steps"][0]["time"]
@@ -108,54 +107,44 @@ def plot_graphs(fuzzy_answer, walk_data):
         "Hip": walk_data["steps"][0]["angle"]["hip"],
         "Knee": walk_data["steps"][0]["angle"]["knee"]
     }
-    # hip, knee = get_angles_trainned().values()
-    # with open(f"epocas_{epocas}_membership_{max_membership}_delays_{t_minus_1}_hip", "wb") as fp:   #Pickling
-    #     pickle.dump(momentums['Hip'], fp)
-    # with open(f"epocas_{epocas}_membership_{max_membership}_delays_{t_minus_1}_knee", "wb") as fp:   #Pickling
-    #     pickle.dump(momentums['Knee'], fp)
-
-
-    # fig = plt.figure()
-    # ax = fig.add_subplot(1, 1, 1)
-    # for body_part in fuzzy_answer.keys():
-    #     ax.plot(t,momentums[body_part], label=f"{body_part} angle")
-    #     ax.plot(t,fuzzy_answer[body_part], label=f"{body_part} fuzzy")
-    # ax.legend(loc="best")
-    # ax.grid()
-    # plt.title(f"{body_part} results")
-    # plt.show()
 
     plt.subplot(1, 1, 1)
     plt.plot(t, momentums['Hip'], 'g', label='Referência')
-    plt.plot(t, fuzzy_answer, 'r', label='Rede neural')
-    plt.annotate(f"MSE: {mean_squared_error(momentums['Hip'],fuzzy_answer):.3}",(0,-0.3))
+    plt.plot(t, fuzzy_answer_hip, 'r', label='Rede neural')
+    plt.annotate(f"MSE: {mean_squared_error(momentums['Hip'],fuzzy_answer_hip):.3}",(0,-0.3))
     plt.title('Torque gerado pela rede neo-nebulosa para o quadril')
     plt.ylabel('Torque (Nm)')
     plt.xlabel('Tempo (s)')
     plt.grid()
     plt.legend(loc="best")
 
-    # plt.subplot(2, 1, 2)
-    # plt.plot(t, momentums['Knee'], 'g', label='Torque 2')
-    # plt.plot(t, fuzzy_answer['Knee'], 'r', label='Torque Fuzzy 2')
-    # plt.title('Fuzzy Trainning Torque 2')
-    # plt.ylabel('Torque (Nm)')
-    # plt.grid()
-    # plt.legend(loc="best")
-    # plot whatever you need...
-    # now, before saving to file:
-    figure = plt.gcf() # get current figure
-    figure.set_size_inches(10.8, 7.2)
     # when saving, specify the DPI
     #plt.savefig(f"epocas_{epocas}_membership_{max_membership}_delays_{t_minus_1}.png", dpi = 200)
+    figure = plt.gcf() # get current figure
+    figure.set_size_inches(10.8, 7.2)
+    plt.show()
+
+    plt.subplot(1, 1, 1)
+    plt.plot(t, momentums['Knee'], 'g', label='Referência')
+    plt.plot(t, fuzzy_answer_knee, 'r', label='Rede neural')
+    plt.annotate(f"MSE: {mean_squared_error(momentums['Knee'],fuzzy_answer_knee):.3}",(0,-0.3))
+    plt.title('Torque gerado pela rede neo-nebulosa para o joelho')
+    plt.ylabel('Torque (Nm)')
+    plt.xlabel('Tempo (s)')
+    plt.grid()
+    plt.legend(loc="best")
+
+    #plt.savefig(f"epocas_{epocas}_membership_{max_membership}_delays_{t_minus_1}.png", dpi = 200)
+    figure = plt.gcf() # get current figure
+    figure.set_size_inches(10.8, 7.2)
     plt.show()
     
 
 def main():
     setup()
-    fuzzy_answer, walk_data = trainning()
+    fuzzy_answer_hip, fuzzy_answer_knee, walk_data = trainning()
     print("--- Trainning took %s seconds ---" % (time.time() - start_time))
-    plot_graphs(fuzzy_answer, walk_data)
+    plot_graphs(fuzzy_answer_hip, fuzzy_answer_knee, walk_data)
 
 def get_angles_trainned():
     setup()
