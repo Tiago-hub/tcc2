@@ -6,7 +6,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 import time
 
-def fuzzy(x,y,epocas=1,max_membership=25,return_network=False):
+def fuzzy(x,y,epocas=1,max_membership=25,return_network=False,neural_ntw=None):
+    #check if neural_ntw has been given
     from classes import NFN, membership,neuron
     max_neurons = len(x)
     inputs = len(x)
@@ -28,11 +29,13 @@ def fuzzy(x,y,epocas=1,max_membership=25,return_network=False):
         xmax = xmax + 1 #add some space from borders
         xmin = xmin - 1 #add some space from borders
 
-    neurons = []
+    if neural_ntw is None:
+        neurons = []
 
-    for i in range(max_neurons):
-        neurons.append(neuron(max_membership,[xmin,xmax]))
-    neural_ntw = NFN(neurons)
+        for i in range(max_neurons):
+            neurons.append(neuron(max_membership,[xmin,xmax]))
+        neural_ntw = NFN(neurons)
+
     #shuffle train_inputs and outputs
     shuffle_list = np.random.permutation(len(x[0]))
     train_input = [[0]*len(x[0]) for i in range(inputs)]

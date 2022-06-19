@@ -8,20 +8,11 @@ import matplotlib.pyplot as plt
 import numpy as np
 import scipy.io
 
-usage = """Script to convert mat file with walking data to dict.
-Place the mat file at data folder"""""
-
-p = optparse.OptionParser(usage=usage)
-p.add_option("-f", "--file", dest="filename",
-                  help="mat name with walk info. Must be at data folder", metavar="FILE")
-p.set_defaults(filename="Subject1.mat")
-(opts, args) = p.parse_args()
 
 sys.path.append(os.path.join(os.path.dirname(__file__), "physical"))
 sys.path.append(os.path.join(os.path.dirname(__file__), "fuzzy"))
 root = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
 data_folder = os.path.join(root,"data")
-walk_file = os.path.join(data_folder,opts.filename)
 
 def walk_parser(path_to_walk_file):
     mat = scipy.io.loadmat(path_to_walk_file)
@@ -39,6 +30,8 @@ def walk_parser(path_to_walk_file):
         temp["foot"] = step["Foot"][0]
         temp["task"] = step["Task"][0]
         temp["duration"] = 60/(0.5*step["cadence"][0][0]) # from article, The cadence (i.e. step/min) was calculated as 60/(0.5*stride duration)
+        temp["length"] = step["strideLength"][0]
+        temp["width"] = step["stepWidth"][0]
         hipAngle = step["Ang"][3]
         kneeAngle = step["Ang"][6]
         temp["angle"] = {
@@ -65,6 +58,16 @@ def walk_parser(path_to_walk_file):
     return walk
 
 if __name__ == "__main__":
+    usage = """Script to convert mat file with walking data to dict.
+    Place the mat file at data folder"""""
+
+    p = optparse.OptionParser(usage=usage)
+    p.add_option("-f", "--file", dest="filename",
+                      help="mat name with walk info. Must be at data folder", metavar="FILE")
+    p.set_defaults(filename="Subject1.mat")
+    (opts, args) = p.parse_args()
+
+    walk_file = os.path.join(data_folder,opts.filename)
     walk_data = walk_parser(walk_file)
     print(walk_data.keys()) 
     print(walk_data)
