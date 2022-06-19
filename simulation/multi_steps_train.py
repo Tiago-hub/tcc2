@@ -125,7 +125,7 @@ def trainning():
         t = time_holder
         angle = angle_holder
         
-        return_network=True if step_counter < 20 else False
+        return_network=True if step_counter < 5 else False
 
         fuzzy_hip= fuzzy(total_inputs,output,
                                     epocas=opts.epocas,
@@ -147,6 +147,21 @@ def trainning():
         if not return_network:
             return fuzzy_hip, fuzzy_knee, walk_data
             
+
+        step = walk_data["steps"][25]
+        total_inputs = [
+            angle["hip"],
+            angle["knee"],
+            t,
+            [step["duration"] for i in range(len(t))],
+            [step["length"] for i in range(len(t))],
+            [step["width"] for i in range(len(t))],
+            [foot for i in range(len(t))],
+        ]
+        for delay in range(opts.delays):
+            total_inputs.append(delay_list(angle["hip"],delay))
+            total_inputs.append(delay_list(angle["knee"],delay))
+            total_inputs.append(delay_list(t,delay))
 
 
     fuzzy_hip_answer = [[0]*len(total_inputs[0]) for i in range(1)]
