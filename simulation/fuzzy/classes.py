@@ -83,16 +83,6 @@ class membership:
                 r[i] = mbsh_result
         return r
     
-    def calc_memberships(self, x):
-        r = []
-        for i, A in enumerate(self.A):
-            r.append(A(x)*self.q[i])
-        return r
-
-    def sum_of_memberships(self, x):
-        r = sum(self.calc_memberships(x))
-        return r
-
 class neuron:
     def __init__(self, mbs_number=3, mbs_limits=[-10, 10],q=None):
         try:
@@ -116,7 +106,7 @@ class neuron:
         if returnSum:
             r = 0
             for mbsh in mbsh_results:
-                r   += mbsh_results[mbsh] * self.q[mbsh]
+                r   += float(mbsh_results[mbsh]) * float(self.q[mbsh])
             return r
         else:
             return mbsh_results
